@@ -49,4 +49,4 @@ Checar se está utilizando o cache:
 sudo systemctl status opennebula-sunstone
 ```
 
-> Deve mostrar o host:porta do servildor de cache.
+> Deve mostrar o host:port do servidor de cache.

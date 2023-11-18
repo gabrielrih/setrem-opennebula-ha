@@ -10,7 +10,7 @@ services:
 - frontend3 (192.168.20.212)
 - cache (192.168.20.213)
 - balancer (192.168.20.214)
-- node (192.168.20.92)
+- node2 (192.168.20.92)
 ```
 
 - Atualização de pacotes
@@ -39,7 +39,7 @@ No arquivo /etc/hosts
 192.168.20.211  frontend2
 192.168.20.212  frontend3
 192.168.20.213  cache
-192.168.20.92   node
+192.168.20.92   node2
 ```
 
 - Alterar a senha do usuário root
