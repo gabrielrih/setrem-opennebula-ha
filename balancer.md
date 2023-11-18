@@ -89,3 +89,17 @@ server {
 > Obviamente, os servidores de frontend só devem ser adicinados aqui quando eles estiverem com o Sunstone corretamente configurado.
 
 Quanto a linha _least_conn_, é onde é definido o algoritmo de balanceamento que será utilizado. Neste caso o "Least connections". Isso significa que uma requisição será redirecionada para o nó que está com menos conexões ativas.
+
+
+
+# Frontend
+
+Editar o arquivo de configuração ```/etc/one/sunstone-server.conf``` em cada um dos frontends:
+
+- Alterar as seguintes linhas no final do arquivo:
+```conf
+:private_fireedge_endpoint: ''
+:public_fireedge_endpoint: ''
+```
+
+Estas linhas representam as URLs de conexão ao FireEdge. Entretanto, nós não estamos usando o FireEdge. Além disso, isso evita um erro que acontece no frontend (erro no endpoint do FireEdge).

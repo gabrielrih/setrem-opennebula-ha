@@ -28,4 +28,6 @@ A fazer.
 
 __Frontends__
 
-A fazer.
+- Floating IP should be used for monitoring daemon parameter MONITOR_ADDRESS in /etc/one/monitord.conf
+Fiz esta alteração apontando para um IP fixo (o frontend2). Porém não tenho certeza se isso resolveu.
+https://docs.opennebula.io/6.6/installation_and_configuration/ha/frontend_ha.html#sunstone-and-fireedge

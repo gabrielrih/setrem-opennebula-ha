@@ -1,20 +1,21 @@
 # Frontends
 
+## Todos os frontends
+
 Realize os passos abaixo em todos os FrontEnds:
 
 Instalar o OpenNebula:
 ```sh
-sudo apt-get update
-sudo apt-get -y install gnupg wget apt-transport-https
-
 sudo su
-wget -q -O- https://downloads.opennebula.io/repo/repo2.key | apt-key add -
 
+apt-get update
+apt-get -y install gnupg wget apt-transport-https
+
+wget -q -O- https://downloads.opennebula.io/repo/repo2.key | apt-key add -
 echo "deb https://downloads.opennebula.io/repo/6.6/Ubuntu/22.04 stable opennebula" > /etc/apt/sources.list.d/opennebula.list
 
-sudo apt update
-
-sudo apt-get -y install opennebula opennebula-sunstone opennebula-fireedge opennebula-gate opennebula-flow opennebula-provision
+apt update
+apt-get -y install opennebula opennebula-sunstone opennebula-gate opennebula-flow opennebula-provision
 ```
 
 Instalar o MySQL:
@@ -31,6 +32,8 @@ Configurando o MySQL:
 sudo mysql_secure_installation
 ```
 
+## Somente no Frontend1 (Leader)
+
 Conectar no MySQL e criar um usuário específico:
 ```sh
 sudo su
@@ -38,7 +41,7 @@ mysql -u root
 ```
 
 ```sql
-CREATE USER 'oneadmin' IDENTIFIED BY 'Poscloud2023!';
+CREATE USER 'oneadmin' IDENTIFIED BY 'my-password-here';
 GRANT ALL PRIVILEGES ON opennebula.* TO 'oneadmin';
 SET GLOBAL TRANSACTION ISOLATION LEVEL READ COMMITTED;
 ```
@@ -53,7 +56,7 @@ DB = [ BACKEND = "mysql",
 SERVER = "localhost",
 PORT = 0,
 USER = "oneadmin",
-PASSWD = "Poscloud2023!",
+PASSWD = "my-password-here",
 DB_NAME = "opennebula",
 CONNECTIONS = 25,
 COMPARE_BINARY = "no" ]
@@ -68,30 +71,54 @@ sudo -u oneadmin /bin/bash
 
 Crie o arquivo /var/lib/one/.one/one_auth com senha inicial no formato
 ```sh
-echo 'oneadmin:cloud2023' > /var/lib/one/.one/one_auth
+echo 'oneadmin:my_password_here' > /var/lib/one/.one/one_auth
 ```
-
-## Somente no Frontend1
 
 Inicie os serviços do opennebula:
 ```sh
-systemctl start opennebula opennebula-sunstone opennebula-fireedge opennebula-gate opennebula-flow
+systemctl start opennebula opennebula-sunstone opennebula-gate opennebula-flow
 ```
 
 Habilite os serviços do opennebula:
 ```sh
-sudo systemctl enable opennebula opennebula-sunstone opennebula-fireedge opennebula-gate opennebula-flow
+sudo systemctl enable opennebula opennebula-sunstone opennebula-gate opennebula-flow
 ```
 
-# FIX IT
-# Colocar aqui como faz para colocar esse server como LEADER
-#
+Configurar Alta Disponibilidade. Colocar o Frontend1 como o LEADER de um cluster de HA:
 
-## No Frontend2 e no Frontend3
+Primeiro encontrar a zona.
+Aqui você pode ver que o servidor aparece como SOLO, ou seja, faz parte de um standalone e não de um cluster com mais nós.
+```sh
+onezone list
+onezone show 0
+```
 
-Fazer o dump da database do OpenNebula no MySQL do Frontend1 e restaurar no frontend follower que estamos configurando agora.
+Pare o serviço do opennebgula e altere o arquivo ```/etc/one/oned.conf``` adicionando o seguinte:
+```sh
+systemctl stop opennebula
+vi /etc/one/oned.conf
+```
 
-- Executar no Frontend1
+```conf
+FEDERATION = [
+    MODE          = "STANDALONE",
+    ZONE_ID       = 0,
+    SERVER_ID     = 0, # changed from -1 to 0 (as 0 is the server id)
+    MASTER_ONED   = ""
+]
+```
+Note que o que mudou foi o SERVER_ID. Estava como -1 e agora mudamos para 0.
+
+Agora você pode iniciar o serviço do openNebula novamente e verificar a zona:
+```sh
+systemctl start opennebula
+onezone show 0
+```
+
+Note que agora o STATE do nó aparece como LEADER e não mais como SOLO.
+
+
+Fazer o dump da database do OpenNebula no MySQL do Frontend1 e restaurar nos demais frontends (followers).
 
 Backup:
 ```sh
@@ -100,23 +127,34 @@ onedb backup -u root -d opennebula
 
 OBS: Senha em branco
 
-Enviar backup para o novo frontend:
+Enviar backup para cada um dos demais frontends (aqui utilizando o frontend2 como exemplo):
 ```sh
 scp /var/lib/one/mysql_localhost_opennebula_2023-11-17_1:22:30.sql frontend2:/tmp
 ```
 
-Copiar o conteúdo do .one directory
+Copiar o conteúdo do .one directory (chaves que devem ser as mesmas entre todos os frontends)
 Tome cuidado para preservar o owner: oneadmin
+Caso o owner não seja preservado, mais abaixo temos um comando para mudar o owner destes arquivos em cada um dos demais frontends.
 ```sh
 ssh frontend2 rm -rf /var/lib/one/.one
 scp -r /var/lib/one/.one/ frontend2:/var/lib/one/
 ```
 
-- Executar no frontend novo
+## Nos demais servidores de frontend (Followers)
 
-Mudar o owner dos arquivos novos copiados:
+Mudar o owner dos arquivos novos copiados (chaves que vieram do leader):
 ```sh
-chown -R oneadmin:oneadmin /var/lib/one/.one
+sudo chown -R oneadmin:oneadmin /var/lib/one/.one
+```
+
+Criar database opennebula no MySQL:
+```sh
+sudo su
+mysql -u root
+```
+
+```sql
+CREATE DATABASE opennebula;
 ```
 
 Restaurar backup no novo frontend:
@@ -124,30 +162,67 @@ Restaurar backup no novo frontend:
 onedb restore -f -u root -d opennebula -f /tmp/mysql_backup.sql
 ```
 
+Conectar no MySQL e criar um usuário específico para uso do OpenNebula:
+```sh
+sudo su
+mysql -u root
+```
+
+```sql
+CREATE USER 'oneadmin' IDENTIFIED BY 'my-password';
+GRANT ALL PRIVILEGES ON opennebula.* TO 'oneadmin';
+SET GLOBAL TRANSACTION ISOLATION LEVEL READ COMMITTED;
+```
+
+Configurar o MySQL no arquivo do OpenNebula:
+```sh
+vi /etc/one/oned.conf
+```
+
+```conf
+DB = [ BACKEND = "mysql",
+SERVER = "localhost",
+PORT = 0,
+USER = "oneadmin",
+PASSWD = "my-password-here",
+DB_NAME = "opennebula",
+CONNECTIONS = 25,
+COMPARE_BINARY = "no" ]
+```
+
 - Voltando ao frontend1
 
-Adicione o servidor novo na zona:
+Adicione o servidor novo na zona (mesma zona que o frontend1, leader, está inserido):
 ```sh
 onezone server-add 0 --name server-1 --rpc http://192.168.20.211:2633/RPC2
 ```
 
-Onde 192.168.150.2 representa o IP do novo frontend.
+> Tome cuidado aqui para que o IP seja o IP do novo frontend. Além disso, o "server-1" deve ser uma string única. Use "server-0", "server-1", e assim por diante.
 
 Após este comando você verá um erro no server caso execute: ```onezone show 0```
 Para corrigir isso, você deve modificar o arquivo ```/etc/one/oned.conf``` no frontend novo e alterar o ```SERVER_ID``` de -1 para 1 (ou 2). Representando respectivamente o número daquele server.
 
 > Lembrando que o leader é 0.
 
-Lembre de iniciar ou reiniciar os serviços:
+Lembre de reiniciar os serviços, ou caso ainda não tenha iniciado você tem que habilitar e iniciar os serviços:
 ```sh
-systemctl start opennebula opennebula-sunstone opennebula-fireedge opennebula-gate opennebula-flow
+sudo systemctl enable opennebula opennebula-sunstone opennebula-gate opennebula-flow
+sudo systemctl start opennebula opennebula-sunstone opennebula-gate opennebula-flow
 ```
 
 
-## Executar em todos
+# Conectando no NODE via SSH
 
-Desabilitar o fireedge
+O OpenNebula tem uma particularidade que é conectar nos "nodes" através de SSH.
+Para isso é necessário que todos os frontends consigam conectar nos "nodes" via SSH sem precisar informar usuário e senha automaticamente.
+
+Para isso, o próprio OpenNebula já criou uma chave SSH. O que temos que fazer é configurar para que essa chave seja utilizada automaticamente toda fez que o OpenNebula tentar conectar no node:
+
+> Lembrando que aqui estamos utilizando um node chamado "node".
+
+Em cada frontend executar:
 ```sh
-systemctl stop opennebula-fireedge
-systemctl disable opennebula-fireedge
+su - oneadmin
+ssh-keyscan node2 >> /var/lib/one/.ssh/known_hosts
+ssh-copy-id -i /var/lib/one/.ssh/id_rsa.pub node2
 ```

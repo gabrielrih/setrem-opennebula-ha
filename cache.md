@@ -20,7 +20,7 @@ Reiniciar o serviço:
 service memcached restart
 ```
 
-# Frontend1
+# Frontends
 
 Após instalação e configuração do Memcached, temos que ajustar a configuração do Sunstone em todos os frontends para utilizar o memcached.
 
@@ -39,20 +39,14 @@ Alterar os seguintes parâmetros:
 :memcache_namespace: opennebula.sunstone
 ```
 
-<!--
-Dependências
+Reiniciar o serviço do sunstone:
 ```sh
-apt-get install libevent-dev
-apt-get install build-essential
+sudo systemctl restart opennebula-sunstone
 ```
 
-Memcached
+Checar se está utilizando o cache:
 ```sh
-wget http://memcached.org/latest
-mv latest memcached.tar.gz
-tar -zxf memcached.tar.gz
-cd memcached-1.x.x
-./configure --prefix=/usr/local/memcached
-make && make test && sudo make install
+sudo systemctl status opennebula-sunstone
 ```
--->
+
+> Deve mostrar o host:porta do servildor de cache.
