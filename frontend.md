@@ -32,6 +32,11 @@ Configurando o MySQL:
 sudo mysql_secure_installation
 ```
 
+- Remove anonymous users? Yes
+- Disallow root login remotely? No
+- Remove test database and access to it? Yes
+- Reload privilege tables now? Yes
+
 ## Somente no Frontend1 (Leader)
 
 Conectar no MySQL e criar um usuário específico:
@@ -92,6 +97,13 @@ Aqui você pode ver que o servidor aparece como SOLO, ou seja, faz parte de um s
 onezone list
 onezone show 0
 ```
+
+Adicione o server na zona:
+```sh
+onezone server-add 0 --name frontend1 --rpc http://192.168.20.21:2633/RPC2
+```
+
+Onde, você deve colocar o --name como sendo o hostname da VM e o IP da VM.
 
 Pare o serviço do opennebgula e altere o arquivo ```/etc/one/oned.conf``` adicionando o seguinte:
 ```sh
@@ -194,7 +206,7 @@ COMPARE_BINARY = "no" ]
 
 Adicione o servidor novo na zona (mesma zona que o frontend1, leader, está inserido):
 ```sh
-onezone server-add 0 --name server-1 --rpc http://192.168.20.211:2633/RPC2
+onezone server-add 0 --name frontend2 --rpc http://192.168.20.211:2633/RPC2
 ```
 
 > Tome cuidado aqui para que o IP seja o IP do novo frontend. Além disso, o "server-1" deve ser uma string única. Use "server-0", "server-1", e assim por diante.
