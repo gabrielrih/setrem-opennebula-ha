@@ -1,4 +1,4 @@
-# Geral
+# Configurações que devem ser feitas em todas as VMs
 
 É necessário executar as configurações abaixo em todas as VMs:
 

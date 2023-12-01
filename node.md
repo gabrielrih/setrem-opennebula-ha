@@ -1,4 +1,6 @@
-# Node
+# Configurações que devem ser feitas em cada VM node
+
+> No nosso caso temos somente uma VM node. Porém, se houvessem mais, a configuração seria basicamente a mesma.
 
 A instalação começa com uma atualização do sistema:
 

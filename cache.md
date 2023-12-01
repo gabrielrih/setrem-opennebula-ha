@@ -1,4 +1,4 @@
-# Configurar cache para sessão de usuário
+# Configurações que devem ser feitas na VM cache
 
 ## Cache server
 

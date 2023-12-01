@@ -1,4 +1,4 @@
-# balancer
+# Configurações que devem ser feitas na VM do NGinx
 
 O que precisa ser executado na VM que será utilizada como Balanceador de Carga.
 
@@ -73,20 +73,21 @@ No mesmo arquivo _/etc/nging/nging.conf_ temos que adicionar as seguintes linhas
 
 upstream backend {
     least_conn;
-    server frontend1:9869;
-    server frontend2:9869;
-    server frontend3:9869;
+    server frontend1:9869 max_fails=3 fail_timeout=30s;
+    server frontend2:9869 max_fails=3 fail_timeout=30s;
+    server frontend3:9869 max_fails=3 fail_timeout=30s;
 }
 
 server {
     ...
     location / {
         proxy_pass http://backend;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 }
 ```
 
-> Obviamente, os servidores de frontend só devem ser adicinados aqui quando eles estiverem com o Sunstone corretamente configurado.
+> Obviamente, os servidores de frontend só devem ser adicionados aqui quando eles estiverem com o Sunstone corretamente configurado.
 
 Quanto a linha _least_conn_, é onde é definido o algoritmo de balanceamento que será utilizado. Neste caso o "Least connections". Isso significa que uma requisição será redirecionada para o nó que está com menos conexões ativas.
 

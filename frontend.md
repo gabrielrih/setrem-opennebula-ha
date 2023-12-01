@@ -1,4 +1,4 @@
-# Frontends
+# Configurações que devem ser feitas em todas as VM de frontend
 
 ## Todos os frontends
 
@@ -89,7 +89,7 @@ Habilite os serviços do opennebula:
 sudo systemctl enable opennebula opennebula-sunstone opennebula-gate opennebula-flow
 ```
 
-Configurar Alta Disponibilidade. Colocar o Frontend1 como o LEADER de um cluster de HA:
+Configurar Alta Disponibilidade. Colocar o Frontend1 como o LEADER de um cluster de HA.
 
 Primeiro encontrar a zona.
 Aqui você pode ver que o servidor aparece como SOLO, ou seja, faz parte de um standalone e não de um cluster com mais nós.
@@ -136,8 +136,6 @@ Backup:
 ```sh
 onedb backup -u root -d opennebula
 ```
-
-OBS: Senha em branco
 
 Enviar backup para cada um dos demais frontends (aqui utilizando o frontend2 como exemplo):
 ```sh
@@ -228,9 +226,9 @@ sudo systemctl start opennebula opennebula-sunstone opennebula-gate opennebula-f
 O OpenNebula tem uma particularidade que é conectar nos "nodes" através de SSH.
 Para isso é necessário que todos os frontends consigam conectar nos "nodes" via SSH sem precisar informar usuário e senha automaticamente.
 
-Para isso, o próprio OpenNebula já criou uma chave SSH. O que temos que fazer é configurar para que essa chave seja utilizada automaticamente toda fez que o OpenNebula tentar conectar no node:
+Para isso, o próprio OpenNebula já criou uma chave SSH. O que temos que fazer é configurar para que essa chave seja utilizada automaticamente toda vez que o OpenNebula tentar conectar no node:
 
-> Lembrando que aqui estamos utilizando um node chamado "node".
+> Lembrando que aqui estamos utilizando um node chamado "node2".
 
 Em cada frontend executar:
 ```sh
