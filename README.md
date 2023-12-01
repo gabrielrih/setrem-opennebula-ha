@@ -11,7 +11,7 @@ O objetivo central deste estudo foi o de avaliar e implementar uma solução que
 
 ## Artigo
 
-[Aqui](./.docs/opennebula_ha_artigo.pdf) é possível encontrar o artigo completo descrevendo todos os detalhes do que foi feito, porque, quais seus benefícios e pontos de melhorias.
+[Aqui](./.docs/opennebula_ha_artigo.pdf) é possível encontrar o artigo completo descrevendo todos os detalhes do que foi feito, porque foi feito, quais seus benefícios e pontos de melhorias.
 
 ## Implementação
 
@@ -19,16 +19,15 @@ Esta é a arquitetura proposta:
 
 ![arquitetura proposta](./.docs/img/opennebula-ha.png "Arquiteutura de HA para o OpenNebula")
 
-... e aqui temos os detalhes de implementação de cada componente da arquitetura proposta.
+... e aqui temos os detalhes de implementação de cada um dos componentes
 
-Configurações a serem feitas:
 - [Em todas as VMs](general.md)
 - [Nos Frontends](frontend.md)
 - [No Memcached](cache.md)
 - [No Balanceador de Carga](balancer.md)
 - [No Node](node.md)
 
-> A VM do node não é citado em nenhum momento no artigo, isso porque este não era o foco. Porém, para que fossem realizados testes no ambiente de Alta Disponibilidade, o node precisou ser configurado. Por isso que temos detalhes dele aqui.
+> A VM do node não é citada em nenhum momento no artigo, isso porque este não era o foco do projeto. Contudo, para que fossem realizados testes no ambiente de Alta Disponibilidade, o node precisou ser configurado. Por isso que temos detalhes da implementação dele aqui.
 
 ## Anexos
 
