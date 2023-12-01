@@ -1,6 +1,6 @@
 # Alta Disponibilidade no OpenNebula
 
-Projeto de estudo elaborado em Novembro de 2023 como atividade do componente de "Gerenciamento de Recursos em Nuvem Privada" da Pós Graduação em Cloud Computing da Faculdade Três de Maio (SETREM) / Rio Grande do Sul.
+Projeto de estudo elaborado em Novembro de 2023 como atividade do componente de "Gerência de Recursos em Nuvem Privada" da Pós Graduação em Cloud Computing da Faculdade Três de Maio (SETREM) / Rio Grande do Sul.
 
 Neste repositório temos documentado os detalhes da implementação do OpenNebula em uma arquitetura de Alta Disponibilidade.
 
