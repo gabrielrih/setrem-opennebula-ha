@@ -11,7 +11,9 @@ O objetivo central deste estudo foi o de avaliar e implementar uma solução que
 
 ## Artigo
 
-[Aqui](./.docs/opennebula_ha_artigo.pdf) é possível encontrar o artigo completo descrevendo todos os detalhes do que foi feito, porque foi feito, quais seus benefícios e pontos de melhorias.
+No arquivo [opennebula_ha_artigo.pdf](./.docs/opennebula_ha_artigo.pdf) é possível visualizar um artigo completo no padrão SBC descrevendo todos os detalhes do que foi feito, porque foi feito, quais seus benefícios e pontos de melhorias.
+
+Também temos o arquivo [opennebula_ha_slides.pdf](./.docs/opennebula_ha_slides.pdf) que contém a apresentação inicial da proposta de estudo.
 
 ## Implementação
 
